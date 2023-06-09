@@ -1,36 +1,48 @@
 import streamlit as st
 import networkx as nx
-from pyvis.network import Network
+import matplotlib.pyplot as plt
+from PIL import Image
+import numpy as np
 
 # Criar um grafo vazio
 G = nx.karate_club_graph()
+@@ -44,29 +44,29 @@
+nx.draw_networkx(G, with_labels=True, node_color='lightblue', node_size=400, font_size=10, alpha=0.8)
+plt.axis('off')
+plt.savefig('graph.png', dpi=300)
+plt.show()
 
-# Configurar o grafo para visualização com pyvis
-nt = Network('500px', '500px')
-nt.from_nx(G)
+# Função para exibir o grafo no Streamlit
+def show_graph():
+    image = Image.open('graph.png')
+    st.image(image, use_column_width=True)
+# Configurar o streamlit para ignorar o aviso de depreciação
+st.set_option('deprecation.showPyplotGlobalUse', False)
 
 # Configuração do app Streamlit
+# Exibir outras informações da rede
 st.title('Análise Exploratória de Rede')
 st.subheader('Grafo')
+show_graph()
+img = plt.imread('graph.png')
+st.image(img, use_column_width=True)
 
-# Exibir o grafo usando pyvis
-viz_graph = nt.show('network.html')
-viz_graph.add_module("clickevents")
-
-# Exibir o grafo no Streamlit usando um iframe
-st.components.v1.iframe(src='network.html', width=800, height=600)
-
-# Outras informações da rede
+# Exibir outras informações da rede
 st.subheader('Informações da Rede')
-st.write(f'Diâmetro: {nx.diameter(G)}')
-st.write(f'Periferia: {nx.periphery(G)}')
+st.write(f'Diâmetro: {diameter}')
+st.write(f'Periferia: {periphery}')
 st.write('Histograma de distribuição empírica de grau')
-degrees = [G.degree(node) for node in G.nodes()]
-st.hist(degrees, bins=max(degrees)-min(degrees)+1, rwidth=0.8)
-st.write(f'Coeficiente de clustering global: {nx.average_clustering(G)}')
-st.write(f'Componentes Conectados: {list(nx.connected_components(G))}')
-st.write(f'Eigenvector centrality: {nx.eigenvector_centrality(G)}')
-st.write(f'Degree centrality: {nx.degree_centrality(G)}')
-st.write(f'Closeness centrality: {nx.closeness_centrality(G)}')
-st.write(f'Betweenness centrality: {nx.betweenness_centrality(G)}')
-st.write(f'Assortatividade geral da rede: {nx.degree_assortativity_coefficient(G)}')
+plt.hist(degrees, bins=max(degrees)-min(degrees)+1, rwidth=0.8)
+plt.hist(degrees, bins=np.arange(min(degrees), max(degrees)+1), rwidth=0.8)
+plt.xlabel('Grau')
+plt.ylabel('Contagem')
+st.pyplot()
+
+st.write(f'Coeficiente de clustering global: {global_clustering}')
+st.write(f'Componentes Conectados: {connected_components}')
+st.write(f'Eigenvector centrality: {eigenvector_centrality}')
+st.write(f'Degree centrality: {degree_centrality}')
+st.write(f'Closeness centrality: {closeness_centrality}')
+st.write(f'Betweenness centrality: {betweenness_centrality}')
+st.write(f'Assortatividade geral da rede: {assortativity}')
+st.write(f'Assortatividade geral da rede: {assortativity}')
